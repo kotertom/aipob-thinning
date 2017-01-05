@@ -1,5 +1,9 @@
 function outputImage = k3m(image)
-  
+% usage: outputImage = k3m(image) 
+%
+% This function performs K3M thinning algorithm on given binary image (1 is background, 0 is foreground)
+
+
   % initial preparations
   pkg load image;
   

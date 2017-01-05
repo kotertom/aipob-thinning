@@ -1,7 +1,10 @@
 function outputImage = kmm(image, aim)
-%This function performs thinning on given image using KMM algorithm and returns the result
+% usage: outputImage = kmm(image, aim)
 %
-%aim is an optional parameter which can be either 
+% This function performs thinning on given image (1 is background, 0 is foreground) 
+% using KMM algorithm and returns the result
+%
+% aim is an optional parameter which can be either 
 %   'skeleton' or 's' for short, which yields 1-pixel wide skeleton or
 %   'contour' or 'c' for short, which yields the contour of the shape
 
@@ -30,7 +33,7 @@ endif
 pkg load image;
 
 % set background as 0's, image as 1's
-tagImage = double(bitxor(image, 1));
+markImage = double(bitxor(image, 1));
 
 deletionArray = [3      5      7      12     13     14     15     20  ...
                  21     22     23     28     29     30     31     48     ...
@@ -61,66 +64,65 @@ change = 1;
         
 while change
   change = 0;
-  outputImage = tagImage > 0;
-workingImage = tagImage;
-workingImage = padarray(workingImage, [1 1], 0);
-workingImage = workingImage == 0;
-workingImage = conv2(workingImage, mask, 'valid');
-
-%DEBUG
-%disp(workingImage);
+  outputImage = markImage > 0;
+  workingImage = markImage;
+  workingImage = padarray(workingImage, [1 1], 0);
+  workingImage = workingImage == 0;
+  workingImage = conv2(workingImage, mask, 'valid');
 
 
-% set 2's on tag image -- contour
-tagImage = tagImage + (workingImage > 0 & tagImage > 0);
 
-%disp(tagImage);
-%imshow(tagImage/4);
+  % set 2's on mark image -- contour
+  
+  markImage = markImage + (workingImage > 0 & markImage > 0);
 
-% set 3's on tag image -- elbow points
-% this means that it has bits corresponding to any of numbers: 2, 8, 32, 128 on and to all of: 1, 4, 16, 64 off.
-on = sum([2 8 32 128]);
-off = sum([1 4 16 64]);
-tagImage = tagImage + ((tagImage == 2) & bitand(workingImage,on) & ~bitand(workingImage,off));
-%imshow(tagImage/4);
+  % set 3's on tag image -- elbow points
+  % this means that it has bits corresponding to any of numbers: 2, 8, 32, 128 on and to all of: 1, 4, 16, 64 off.
+  
+  on = sum([2 8 32 128]);
+  off = sum([1 4 16 64]);
+  markImage = markImage + ((markImage == 2) & bitand(workingImage,on) & ~bitand(workingImage,off));
 
-% set 4's on tag image 
-%disp(workingImage);
-%disp(tagFourArray);
+  if aim == 'c'
+    outputImage = ~(markImage == 2);
+    return;
+  endif
 
-mask1 = (tagImage > 1) & ismember(workingImage, tagFourArray);
-tagImage = tagImage .* ~mask1 + 4 * mask1;
-%imshow(tagImage/4);
+  % set 4's on tag image 
+  
+  mask1 = (markImage > 1) & ismember(workingImage, tagFourArray);
+  markImage = markImage .* ~mask1 + 4 * mask1;
 
-mask1 = (tagImage == 4);
-tagImage = tagImage .* ~mask1;
-%imshow(tagImage/4);
+  mask1 = (markImage == 4);
+  markImage = markImage .* ~mask1;
 
-workingImage = zeros(size(tagImage));
-w = size(tagImage, 2);
-h = size(tagImage, 1);
-tagImage = padarray(tagImage, [1 1], 0);
-for n=2:3
-  for i=1:h
-    for j=1:w
-      if tagImage(i+1,j+1) != n
-        continue;
-      endif
-      
-      workingImage(i,j) = sum(sum((tagImage(i:i+2,j:j+2) > 0) .* mask));
-      
-      if ismember(workingImage(i,j), deletionArray)
-        tagImage(i+1,j+1) = 0;
-      else
-        tagImage(i+1,j+1) = 1;
-      endif
+  workingImage = zeros(size(markImage));
+  w = size(markImage, 2);
+  h = size(markImage, 1);
+  markImage = padarray(markImage, [1 1], 0);
+  for n=2:3
+    for i=1:h
+      for j=1:w
+        if markImage(i+1,j+1) != n
+          continue;
+        endif
+        
+        workingImage(i,j) = sum(sum((markImage(i:i+2,j:j+2) > 0) .* mask));
+        
+        if ismember(workingImage(i,j), deletionArray)
+          markImage(i+1,j+1) = 0;
+        else
+          markImage(i+1,j+1) = 1;
+        endif
 
+      end
     end
   end
-end
-tagImage = tagImage(2:end-1,2:end-1);
-%imshow(tagImage(2:end-1,2:end-1)/4);
+  markImage = markImage(2:end-1,2:end-1);
 
-change = ~all(all(outputImage == (tagImage > 0)))
-imshow(outputImage);
+  change = ~all(all(outputImage == (markImage > 0)));
+  %imshow(outputImage);
+  end
+
+outputImage = ~outputImage;
 end

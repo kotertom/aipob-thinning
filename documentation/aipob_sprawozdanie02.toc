@@ -1,0 +1,12 @@
+\select@language {polish}
+\select@language {polish}
+\contentsline {section}{\numberline {1}Wst\IeC {\k e}p}{2}{section.1}
+\contentsline {section}{\numberline {2}KMM}{2}{section.2}
+\contentsline {subsection}{\numberline {2.1}Algorytm i implementacja}{2}{subsection.2.1}
+\contentsline {section}{\numberline {3}K3M}{4}{section.3}
+\contentsline {subsection}{\numberline {3.1}Algorytm i implementacja}{4}{subsection.3.1}
+\contentsline {section}{\numberline {4}Przyk\IeC {\l }ady}{5}{section.4}
+\contentsline {section}{\numberline {5}\IeC {\'Z}r\IeC {\'o}d\IeC {\l }a}{12}{section.5}
+\contentsline {section}{\numberline {6}Kod \IeC {\'z}r\IeC {\'o}d\IeC {\l }owy}{13}{section.6}
+\contentsline {subsection}{\numberline {6.1}KMM}{13}{subsection.6.1}
+\contentsline {subsection}{\numberline {6.2}K3M}{16}{subsection.6.2}
